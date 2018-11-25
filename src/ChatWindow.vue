@@ -10,6 +10,9 @@
     <UserList 
       v-if="showUserList"
       :participants="participants"
+      :show="show"
+      :showS="showS"
+      :socketId="socketId"
     />
     <MessageList
       v-if="!showUserList"
@@ -24,7 +27,6 @@
       v-if="!showUserList"
       :showEmoji="showEmoji"
       :onSubmit="onUserInputSubmit"
-      :suggestions="getSuggestions()"
       :showFile="showFile"
       :placeholder="placeholder"
       :colors="colors" />
@@ -55,6 +57,18 @@ export default {
     },
     participants: {
       type: Array,
+      required: true
+    },
+    show: {
+      type: Boolean,
+      required: true
+    },
+    showS: {
+      type: Boolean,
+      required: true
+    },
+    socketId: {
+      type: String,
       required: true
     },
     title: {
@@ -117,9 +131,6 @@ export default {
   methods: {
     handleUserListToggle(showUserList) {
       this.showUserList = showUserList
-    },
-    getSuggestions(){
-      return this.messages.length > 0 ? this.messages[this.messages.length - 1].suggestions : []
     }
   }
 }
