@@ -1,6 +1,5 @@
 <template>
   <div>
-    <Suggestions :suggestions="suggestions" v-on:sendSuggestion="_submitSuggestion" :colors="colors"/>
     <div v-if="file" class='file-container' :style="{backgroundColor: colors.userInput.text, color: colors.userInput.bg}">
       <span class='icon-file-message'><img src="./assets/file.svg" alt='genericFileIcon' height="15" /></span>
       {{file.name}}
@@ -41,23 +40,17 @@
 import EmojiIcon from './EmojiIcon.vue'
 import FileIcons from './FileIcons.vue'
 import SendIcon from './SendIcon.vue'
-import Suggestions from './Suggestions.vue'
 
 export default {
   components: {
     EmojiIcon,
     FileIcons,
-    SendIcon,
-    Suggestions
+    SendIcon
   },
   props: {
     showEmoji: {
       type: Boolean,
       default: () => false
-    },
-    suggestions: {
-      type: Array,
-      default: () => []
     },
     showFile: {
       type: Boolean,
@@ -76,29 +69,26 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       file: null,
       inputActive: false
     }
   },
   methods: {
-    cancelFile () {
+    cancelFile() {
       this.file = null
     },
-    setInputActive (onoff) {
+    setInputActive(onoff) {
       this.inputActive = onoff
     },
-    handleKey (event) {
+    handleKey(event) {
       if (event.keyCode === 13 && !event.shiftKey) {
         this._submitText(event)
         event.preventDefault()
       }
     },
-    _submitSuggestion(suggestion) {
-      this.onSubmit({author: 'me', type: 'text', data: { text: suggestion }})
-    },
-    _submitText (event) {
+    _submitText(event) {
       const text = this.$refs.userInput.textContent
       const file = this.file
       if (file) {
@@ -129,15 +119,23 @@ export default {
         }
       }
     },
-    _handleEmojiPicked (emoji) {
+    _handleEmojiPicked(emoji) {
       this.onSubmit({
         author: 'me',
         type: 'emoji',
         data: { emoji }
       })
     },
-    _handleFileSubmit (file) {
-      this.file = file
+    _handleFileSubmit(file) {
+      let newFile = {}
+      newFile.name = file.name
+      let reader = new FileReader()
+      reader.onloadend = () => {
+        //console.log("RESULT", reader.result);
+        newFile.base64 = reader.result
+      }
+      reader.readAsDataURL(file)
+      this.file = newFile
     }
   }
 }
